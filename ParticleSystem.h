@@ -8,8 +8,8 @@
 const int NUMBER_OF_PARTICLES = 5000;
 const float MAX_ROTATION = 360;
 const float MIN_ROTATION = 0;
-const float MIN_TRANS = .01;
-const float MAX_TRANS = .10;
+const float MIN_TRANS = .005;
+const float MAX_TRANS = .03;
 const float MIN_DELTA_ROTATION = 1.0;
 const float MAX_DELTA_ROTATION = 5.0;
 const float MIN_DELTA_SURFACE = .005;
