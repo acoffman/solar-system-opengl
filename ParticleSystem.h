@@ -74,7 +74,7 @@ Particle ParticleSystem::generateNewParticle(){
 }
 
 Particle ParticleSystem::getNextParticle(){
-	currentParticle = (currentParticle == 2000) ? 0 : currentParticle;
+	currentParticle = (currentParticle == NUMBER_OF_PARTICLES) ? 0 : currentParticle;
 	return particles[currentParticle++];
 }
 
