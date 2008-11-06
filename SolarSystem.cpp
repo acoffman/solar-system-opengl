@@ -77,15 +77,10 @@ void ResizeWindow(GLsizei w, GLsizei h);
 
 void drawEarthAndMoon();
 void drawSun();
-void drawMercury();
-void drawVenus();
-void drawMars();
-void drawJupiter();
-void drawSaturn();
-void drawUranus();
-void drawNeptune();
-void drawPluto();
 void drawSaturnRing();
+void drawAllPlanets();
+void drawGenericPlanet(GLfloat inclination, GLfloat orbitDuration,
+		GLfloat orbitRadius, GLfloat rotationDuration, GLuint texturename, GLfloat radius);
 void drawParticle(Particle currParticle);
 void drawAllParticles();
 
@@ -163,10 +158,12 @@ void KeyboardPress(unsigned char pressedKey, int mouseXPosition, int mouseYPosit
 							ViewerDistance = MAXIMUM_VIEWER_DISTANCE;
 						break; 
 				  }
+							//enable and disable the particle system
 		case 'p': {
 						particleFlag = !particleFlag;
 						break;
 					}
+							//enable and disable the blending function
 		case 'b': {
 						blendFlag = !blendFlag;
 						break;
@@ -243,25 +240,22 @@ void Display()
 				LOOK_AT_POSITION[2] + ViewerDistance * sin(viewerZenith) * cos(viewerAzimuth),
 				LOOK_AT_POSITION[0], LOOK_AT_POSITION[1], LOOK_AT_POSITION[2],
 				0.0, 1.0, 0.020);
+
 	// Render scene.
 	UpdateLight();
 	drawEarthAndMoon();
 	drawSun();
-	drawMercury();
-	drawVenus();
-	drawMars(); 
-	drawJupiter();
-	drawSaturn();
-	drawUranus();
-	drawNeptune();
-	drawPluto();
+	drawAllPlanets();
 	drawSaturnRing();
-	if(blendFlag)
+
+	if(blendFlag){ //if the user has selected blending, enable it.
 		glEnable(GL_BLEND);
 		glDepthMask(GL_FALSE);
 		glBlendFunc(GL_SRC_COLOR,GL_ONE);
+	}
 	if(particleFlag)
 		drawAllParticles();
+
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 	glDisable(GL_LIGHTING);
@@ -288,6 +282,27 @@ void MakeAllImages()
 	return;
 }
 
+//makes calls to the generic planet drawing function. took this out
+//of the display function to enhance readability
+void drawAllPlanets(){
+	drawGenericPlanet(MERCURY_INCLINATION, MERCURY_ORBIT_DUR, MERCURY_ORBIT_RADIUS,
+			MERCURY_ROTATION_DUR, MercuryTextureName, MERCURY_RADIUS);
+	drawGenericPlanet(VENUS_INCLINATION, VENUS_ORBIT_DUR, VENUS_ORBIT_RADIUS,
+			VENUS_ROTATION_DUR, VenusTextureName, VENUS_RADIUS);
+	drawGenericPlanet(MARS_INCLINATION, MARS_ORBIT_DUR, MARS_ORBIT_RADIUS,
+			MARS_ROTATION_DUR, MarsTextureName, MARS_RADIUS);
+	drawGenericPlanet(JUPITER_INCLINATION, JUPITER_ORBIT_DUR, JUPITER_ORBIT_RADIUS,
+			JUPITER_ROTATION_DUR, JupiterTextureName, JUPITER_RADIUS);
+	drawGenericPlanet(SATURN_INCLINATION, SATURN_ORBIT_DUR, SATURN_ORBIT_RADIUS,
+			SATURN_ROTATION_DUR, SaturnTextureName, SATURN_RADIUS);
+	drawGenericPlanet(URANUS_INCLINATION, URANUS_ORBIT_DUR, URANUS_ORBIT_RADIUS,
+			URANUS_ROTATION_DUR, UranusTextureName, URANUS_RADIUS);
+	drawGenericPlanet(NEPTUNE_INCLINATION, NEPTUNE_ORBIT_DUR, NEPTUNE_ORBIT_RADIUS,
+			NEPTUNE_ROTATION_DUR, NeptuneTextureName, NEPTUNE_RADIUS);
+	drawGenericPlanet(PLUTO_INCLINATION, PLUTO_ORBIT_DUR, PLUTO_ORBIT_RADIUS,
+			PLUTO_ROTATION_DUR, PlutoTextureName, PLUTO_RADIUS);
+
+}
 
 // Convert the bitmap with the parameterized name into an OpenGL texture. //
 void MakeImage(const char bitmapFilename[], GLuint &textureName, bool hasAlpha)
@@ -416,122 +431,6 @@ void drawSun()
 }
 
 
-//Function to draw Mercury and rotate it around the sun.
-void drawMercury()
-{
-
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(MERCURY_INCLINATION, 0.0, 0.0 , 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/MERCURY_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(MERCURY_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/MERCURY_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, MercuryTextureName);
-				gluSphere(quadro, MERCURY_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
-//Draw Venus
-void drawVenus()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(VENUS_INCLINATION, 0.0, 0.0 , 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/VENUS_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(VENUS_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/VENUS_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, VenusTextureName);
-				gluSphere(quadro, VENUS_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
-//Draw Mars 
-void drawMars()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(MARS_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/MARS_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(MARS_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/MARS_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, MarsTextureName);
-				gluSphere(quadro, MARS_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
-//Draw Jupiter 
-void drawJupiter()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(JUPITER_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/JUPITER_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(JUPITER_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/JUPITER_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, JupiterTextureName);
-				gluSphere(quadro, JUPITER_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
-//Draw Saturn 
-void drawSaturn()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(SATURN_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/SATURN_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(SATURN_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/SATURN_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, SaturnTextureName);
-				gluSphere(quadro, SATURN_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
 //Draw Rings
 void drawSaturnRing()
 {
@@ -555,8 +454,12 @@ void drawSaturnRing()
 	gluDeleteQuadric(quadro);
 }
 
-//Draw Uranus 
-void drawUranus()
+//Given parameters about the planets dimension, orbit, radius etc, this function
+//will draw a texture mapped plant.
+//it is used to draw everything except the sun, earth/moon. and saturns rings, as
+//they are special cases of this function
+void drawGenericPlanet(GLfloat inclination, GLfloat orbitDuration,
+		GLfloat orbitRadius, GLfloat rotationDuration, GLuint texturename, GLfloat radius)
 {
 	GLUquadricObj* quadro = gluNewQuadric();							
 	gluQuadricNormals(quadro, GLU_SMOOTH);		
@@ -565,65 +468,21 @@ void drawUranus()
 		glPushMatrix();
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glPushMatrix();
-				glRotatef(URANUS_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/URANUS_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(URANUS_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/URANUS_ROTATION_DUR), 0.0, 1.0, 0.0 );
+				glRotatef( inclination, 0.0, 0.0, 1.0);
+				glRotatef( 360.0 * (EarthDaysTranspired/orbitDuration), 0.0, 1.0, 0.0);
+				glTranslatef(orbitRadius, 0.0, 0.0 );
+				glRotatef( 360.0 * (CurrentEarthRotation/rotationDuration), 0.0, 1.0, 0.0 );
 				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, UranusTextureName);
-				gluSphere(quadro, URANUS_RADIUS, 48, 48);
+				glBindTexture(GL_TEXTURE_2D, texturename);
+				gluSphere(quadro, radius, 48, 48);
 			glPopMatrix();
 		glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 	gluDeleteQuadric(quadro);
 }
 
-//Draw Neptune 
-void drawNeptune()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef(NEPTUNE_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/NEPTUNE_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(NEPTUNE_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/NEPTUNE_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, NeptuneTextureName);
-				gluSphere(quadro, NEPTUNE_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
-//Draw Pluto 
-void drawPluto()
-{
-	GLUquadricObj* quadro = gluNewQuadric();							
-	gluQuadricNormals(quadro, GLU_SMOOTH);		
-	gluQuadricTexture(quadro, GL_TRUE);			
-	glEnable(GL_TEXTURE_2D);
-		glPushMatrix();
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glPushMatrix();
-				glRotatef( PLUTO_INCLINATION, 0.0, 0.0, 1.0);
-				glRotatef( 360.0 * (EarthDaysTranspired/PLUTO_ORBIT_DUR), 0.0, 1.0, 0.0);
-				glTranslatef(PLUTO_ORBIT_RADIUS, 0.0, 0.0 );
-				glRotatef( 360.0 * (CurrentEarthRotation/PLUTO_ROTATION_DUR), 0.0, 1.0, 0.0 );
-				glRotatef( -90.0, 1.0, 0.0, 0.0 );
-				glBindTexture(GL_TEXTURE_2D, PlutoTextureName);
-				gluSphere(quadro, PLUTO_RADIUS, 48, 48);
-			glPopMatrix();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-	gluDeleteQuadric(quadro);
-}
-
+//Cycles through each particle in the particle system and passes it to the
+//draw function
 void drawAllParticles(){
 	particles.updateAll();
 	for(int i = 0; i < particles.getNumberOfParticles(); i++)
@@ -631,7 +490,8 @@ void drawAllParticles(){
 
 }
 
-//Draws one individual particle
+//Draws one individual particle, given a particle struct from the particle
+//system object
 void drawParticle(Particle currParticle)
 {	
 	glEnable(GL_TEXTURE_2D);
@@ -670,5 +530,4 @@ void drawParticle(Particle currParticle)
 		glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 }
-
 

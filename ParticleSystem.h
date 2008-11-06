@@ -1,17 +1,26 @@
 //Adam Coffman 
 //Particle System Class
+////////////////////////////////////////////////////////////////////////
+//This Class is used to represent the particle system. It contains 
+//an array of particle structs. Each with their own translation from the
+//origin, azimuth, and zenith, as well as velocities and lifetimes.
+//An array was a better choice than a linked list here as there are
+//always a constant number of particles (when one dies, it is immediately
+//replaced by another) and we do not need to perform sorted insertions
+//and deletions.
+/////////////////////////////////////////////////////////////////////////
 #include <cmath>
 #include <math.h>
 #include <cstdlib>
 #include <time.h>
 
-const int NUMBER_OF_PARTICLES = 5000;
+const int NUMBER_OF_PARTICLES = 3000;
 const float MAX_ROTATION = 360;
 const float MIN_ROTATION = 0;
 const float MIN_TRANS = .005;
 const float MAX_TRANS = .03;
-const float MIN_DELTA_ROTATION = 1.0;
-const float MAX_DELTA_ROTATION = 5.0;
+const float MIN_DELTA_ROTATION = 0.5;
+const float MAX_DELTA_ROTATION = 3.0;
 const float MIN_DELTA_SURFACE = .005;
 const float MAX_DELTA_SURFACE = .01;
 const int MIN_LIFETIME = 10;
@@ -48,8 +57,11 @@ class ParticleSystem{
 
 		//Array of all particle structs
 		Particle particles[NUMBER_OF_PARTICLES];
-	
+
+	  //This is your random number generator from the last program
 		float generateRandomNumber(float lower, float upper);
+		
+		//Get a new Particle struct with new randomized values.
 		Particle generateNewParticle();
 
 };
@@ -95,6 +107,8 @@ float ParticleSystem::generateRandomNumber(float lower, float upper){
 }
 
 void ParticleSystem::updateAll(){
+	//if the particle's lifetime is over, replace it with another,
+	//otherwise update all the appropriate values.
 	for(int i = 0; i < NUMBER_OF_PARTICLES; i++){
 		if(particles[i].lifetime == 0){
 			particles[i] = generateNewParticle();
